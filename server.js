@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 const app = express();
 
@@ -11,6 +14,9 @@ app.use(morgan("tiny"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+import mongoClient from "./config/db.js";
+mongoClient();
+
 // LOAD ROUTERS
 import loginRouter from "./routers/login.router.js";
 
@@ -20,27 +26,21 @@ app.use("/api/v1/login", loginRouter);
 
 app.get("/", function (req, res) {
   res.send("Hello World");
-
-
-
 });
-
 
 // 404return
 
 app.use((req, res, next) => {
-  const error = new Error("Resources not found")
-  error.status = 404
+  const error = new Error("Resources not found");
+  error.status = 404;
   next(error);
-})
+});
 
 // handleError
-import {handleError} from './utils/errorHandler.js'
+import { handleError } from "./utils/errorHandler.js";
 app.use("*", (error, res, next) => {
-  handleError(error, res)
-
-})
-
+  handleError(error, res);
+});
 
 app.listen(PORT, (error) => {
   if (error) console.log(error);
